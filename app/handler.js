@@ -15,6 +15,28 @@ const createBooksHandler = (request, h) => {
         reading
     } = request.payload
 
+    // to check and prevent name is not empty string or null
+    if (!name || name === '') {
+        const res = h.response({
+            status: 'fail',
+            message: 'Gagal menambah buku. Nama tidak boleh kosong'
+        })
+        res.code(400)
+        return res
+    }
+
+    // to check and prevent readpage > pageCount
+    if (readPage > pageCount) {
+        const res = h.response({
+            status: 'fail',
+            message: 'Gagal menambah buku. nilai readPage tidak boleh lebih besar dari pageCount'
+        })
+        res.code(400)
+        return res
+    }
+
+
+
     const id = nanoid(16)
 
     // mengetahui apakah buku telah selesai dibaca atau belum
@@ -32,6 +54,8 @@ const createBooksHandler = (request, h) => {
     const insertedAt = new Date().toISOString()
 
     const updatedAt = insertedAt
+
+    
 
     // format informasi buku baru yang telah dibuat
     const newBook = {
