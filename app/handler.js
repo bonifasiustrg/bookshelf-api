@@ -1,7 +1,6 @@
 // menampung konfigurasi fungsi untuk menjalankan aplikasi yg akan diimport oleh routes.js
 const books = require('./bookshelf');  // get book data array
 const { nanoid } = require('nanoid');
-const bookshelf = require('./bookshelf');
 
 // handler for crearting books data
 const addBookHandler = (request, h) => {
@@ -17,10 +16,10 @@ const addBookHandler = (request, h) => {
     } = request.payload
 
     // to check and prevent name is not empty string or null
-    if (!name || name === '') {
+    if (!name || name === ''|| name === null) {
         const res = h.response({
             status: 'fail',
-            message: 'Gagal menambah buku. Nama tidak boleh kosong'
+            message: 'Gagal menambahkan buku. Mohon isi nama buku'
         })
         res.code(400)
         return res
@@ -30,7 +29,7 @@ const addBookHandler = (request, h) => {
     if (readPage > pageCount) {
         const res = h.response({
             status: 'fail',
-            message: 'Gagal menambah buku. nilai readPage tidak boleh lebih besar dari pageCount'
+            message: 'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount'
         })
         res.code(400)
         return res
@@ -80,6 +79,7 @@ const addBookHandler = (request, h) => {
     if (isSuccess) {
         const res = h.response({
             status: 'success',
+            message: 'Buku berhasil ditambahkan',
             data: {
                 bookId:id
             }
@@ -91,26 +91,33 @@ const addBookHandler = (request, h) => {
 
     const res = h.response({
         status: 'error',
-        message: 'Buku gagal ditambahkan!'
+        message: 'Buku gagal ditambahkan'
     })
-    res.code(500)
+    res.code(404)
     return res
 }
 
-//handler for show or get all books data from bookshelf array, only show id, name and publisher
-/* const getAllBooksHandler = (response, h) => ({
-    status: 'success',
-    data: {
-        books: books.map( (book) => ({
-            id: book.id,
-            name: book.name,
-            publisher: book.publisher
-        }))
-    }
-}) */
-
+//handler for show or get all books data from books array, only show id, name and publisher
 const getAllBooksHandler = (request, h) => {
     const { name, reading, finished } = request.query
+
+    if (name !== undefined) {
+        const filterBooksByName = books
+        .filter((book) => book.name.toLowerCase().includes(name.toLowerCase()))
+        .map((book) => ({
+            id: book.id,
+            name: book.name,
+            publisher: book.publisher,
+        }));
+        return {
+        status: "success",
+        data: {
+            books: filterBooksByName,
+        },
+        };
+    }
+
+
 
     if (name) {
         const lowName = name.toLowerCase()
@@ -118,7 +125,7 @@ const getAllBooksHandler = (request, h) => {
         const response = h.response({
         status: 'success',
         data: {
-        books: bookshelf
+        books: books
             .filter((n) => n.name === lowName)
             .map((books) => ({
                 id: books.id,
@@ -135,7 +142,7 @@ const getAllBooksHandler = (request, h) => {
         const response = h.response({
         status: 'success',
         data: {
-            books: bookshelf
+            books: books
             .filter((r) => r.reading === true)
             .map((books) => ({
                 id: books.id,
@@ -152,7 +159,7 @@ const getAllBooksHandler = (request, h) => {
         const response = h.response({
         status: 'success',
         data: {
-            books: bookshelf
+            books: books
             .filter((r) => r.reading === false)
             .map((books) => ({
                 id: books.id,
@@ -169,7 +176,7 @@ const getAllBooksHandler = (request, h) => {
         const response = h.response({
         status: 'success',
         data: {
-            books: bookshelf
+            books: books
             .filter((f) => f.finished === true)
             .map((books) => ({
                 id: books.id,
@@ -186,7 +193,7 @@ const getAllBooksHandler = (request, h) => {
     const response = h.response({
         status: 'success',
         data: {
-        books: bookshelf
+        books: books
             .filter((f) => f.finished === false)
             .map((books) => ({
                 id: books.id,
@@ -202,7 +209,7 @@ const getAllBooksHandler = (request, h) => {
     const response = h.response({
         status: 'success',
         data: {
-        books: bookshelf.map((m) => ({
+        books: books.map((m) => ({
         id: m.id,
         name: m.name,
         publisher: m.publisher
@@ -243,7 +250,7 @@ const editBookByIdHandler = (request, h) => {
     const index = books.findIndex((book) => book.id === id);
 
     if (index !== -1) {
-    if (!name || name === '') {
+    if (!name || name === ''|| name === null) {
         const response = h.response({
             status: 'fail',
             message: 'Gagal memperbarui buku. Mohon isi nama buku',
@@ -296,8 +303,6 @@ const editBookByIdHandler = (request, h) => {
 
     return response;
 };
-
-
 
     // handler for DELETE book
     const deleteBookByIdHandler = (request, h) => {
