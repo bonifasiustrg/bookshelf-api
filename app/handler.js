@@ -15,7 +15,7 @@ const createBooksHandler = (request, h) => {
         reading
     } = request.payload
 
-    const { id } = nanoid(16)
+    const id = nanoid(16)
 
     // mengetahui apakah buku telah selesai dibaca atau belum
     const isFinished = (readPage, pageCount) => {
