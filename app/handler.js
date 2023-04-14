@@ -2,7 +2,7 @@
 const bookshelf = require('./bookshelf');  // get book data array
 const { nanoid } = require('nanoid');
 
-
+// handler for crearting books data
 const createBooksHandler = (request, h) => {
     const {
         name,
@@ -96,4 +96,16 @@ const createBooksHandler = (request, h) => {
     return res
 }
 
-module.exports = { createBooksHandler }
+//handler for show or get all books data from bookshelf array, only show id, name and publisher
+const getAllBooksHandler = (response, h) => ({
+    status: 'success',
+    data: {
+        books: bookshelf.map( (book) => ({
+            id: book.id,
+            name: book.name,
+            publisher: book.publisher
+        }))
+    }
+})
+
+module.exports = { createBooksHandler, getAllBooksHandler }

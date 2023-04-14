@@ -1,5 +1,5 @@
 // menampun fungsi dan method untuk melakukan request penggunaan API
-const { createBooksHandler } = require('./handler')
+const { createBooksHandler, getAllBooksHandler } = require('./handler')
 
 
 
@@ -24,6 +24,11 @@ const routes = [
     method: 'POST',
     path:'/books',
     handler: createBooksHandler
+},
+{
+    method: 'GET',
+    path:'/books',
+    handler: getAllBooksHandler
 }
 ]
 
